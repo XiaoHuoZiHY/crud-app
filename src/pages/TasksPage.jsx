@@ -27,6 +27,8 @@ export default function TasksPage() {
     [tasks],
   )
 
+  const pendingCount = tasks.length - completedCount
+
   useEffect(() => {
     refreshTasks()
   }, [refreshTasks])
@@ -53,33 +55,55 @@ export default function TasksPage() {
 
   return (
     <main className="tasks-page">
-      <h1>任务列表</h1>
+      <header className="tasks-page__header">
+        <h1>任务管理</h1>
+        <p className="tasks-page__subtitle">创建、编辑、搜索并追踪你的待办事项</p>
+        {!loading && !error && (
+          <div className="tasks-page__stats">
+            <span className="tasks-page__stat">
+              全部 <strong>{tasks.length}</strong>
+            </span>
+            <span className="tasks-page__stat tasks-page__stat--accent">
+              待完成 <strong>{pendingCount}</strong>
+            </span>
+            <span className="tasks-page__stat tasks-page__stat--success">
+              已完成 <strong>{completedCount}</strong>
+            </span>
+          </div>
+        )}
+      </header>
 
       {loading && <Loading text="Loading..." />}
       {!loading && (
         <>
           {error && <p className="tasks-page__error">错误：{error}</p>}
-          <TaskForm />
+          <section className="panel">
+            <TaskForm />
+          </section>
           {!error && (
             <>
-              <div className="tasks-page__toolbar">
-                <SearchBar value={searchQuery} onChange={setSearchQuery} />
-                {completedCount > 0 && (
-                  <button
-                    type="button"
-                    className="tasks-page__clear-btn"
-                    onClick={handleClearCompleted}
-                    disabled={isClearing}
-                  >
-                    {isClearing ? '清除中...' : 'Clear completed'}
-                  </button>
-                )}
-              </div>
-              <TaskList
-                tasks={filteredTasks}
-                searchQuery={searchQuery}
-                totalCount={tasks.length}
-              />
+              <section className="panel">
+                <div className="tasks-page__toolbar">
+                  <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                  {completedCount > 0 && (
+                    <button
+                      type="button"
+                      className="tasks-page__clear-btn"
+                      onClick={handleClearCompleted}
+                      disabled={isClearing}
+                    >
+                      {isClearing ? '清除中...' : 'Clear completed'}
+                    </button>
+                  )}
+                </div>
+              </section>
+              <section className="panel">
+                <TaskList
+                  tasks={filteredTasks}
+                  searchQuery={searchQuery}
+                  totalCount={tasks.length}
+                />
+              </section>
             </>
           )}
         </>
